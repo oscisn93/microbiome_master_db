@@ -1,14 +1,14 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker
 
+# new database that combines old databases, and will be updated with the latest data
+SUMMARY_DATABASE_PATH = "sqlite:///../../summary_data/bacteria_data.db"
+"""
+  The database schema for the new bacteria summary database
+"""
 
-# Create the database
-engine = create_engine("sqlite:///bacteria_data.db", echo=True)
-# base class for our models
 Base = declarative_base()
-
-
-# each entry is one of the databases is a its own row
+# Create the database schema
 class Species(Base):
   __tablename__ = "species"
   # reference: Mangul_Lab_USC/db.microbiome/Bacteria/bacteria_data.db
@@ -30,9 +30,9 @@ class Species(Base):
       self.dbname
     )
 
-
+# TODO: Are these necessary for our study?
 # rather than make two databases we will compile all the data onto one but on multiple tables
-class SpeciesChromosomeStats(Base):
+class ChromosomeStats(Base):
   __tablename__ = "species_chromosome_stats"
   
   id = Column(Integer, primary_key=True)
@@ -43,7 +43,7 @@ class SpeciesChromosomeStats(Base):
   min_chromosome_length = Column(Integer)
 
 
-class SpeciesPlasmidStats(Base):
+class PlasmidStats(Base):
   __tablename__ = "species_plasmid_stats"
 
   id = Column(Integer, primary_key=True)
@@ -54,7 +54,7 @@ class SpeciesPlasmidStats(Base):
   min_plasmid_length = Column(Integer)
 
 
-class SpeciesContigStats(Base):
+class ContigStats(Base):
   __tablename__ = "species_contig_stats"
 
   id = Column(Integer, primary_key=True)
@@ -65,8 +65,17 @@ class SpeciesContigStats(Base):
   min_contig_length = Column(Integer)
 
 
-# push the schema onto the database.
-# this will create the database if it does not exist
-Base.metadata.create_all(engine)
-session = sessionmaker(bind=engine)()
-session.commit()
+def create_database():
+  """"
+    Creates the database schema for the new bacteria summary database
+  """
+
+  engine = create_engine(SUMMARY_DATABASE_PATH, echo=True)
+  # push the exiting schema to the database
+  Base.metadata.create_all(engine)
+  session = sessionmaker(bind=engine)()
+  session.commit()
+
+def database_session():
+  engine = create_engine(SUMMARY_DATABASE_PATH, echo=True)
+  return sessionmaker(bind=engine)()

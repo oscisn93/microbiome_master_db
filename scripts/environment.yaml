@@ -1,0 +1,8 @@
+name: db_env
+channels:
+  - anaconda
+  - defaults
+dependencies:
+  - sqlalchemy=1.4.39=py310h5eee18b_0
+  - sqlite=3.41.2=h5eee18b_0
+prefix: /home/oscarin/anaconda3/envs/db_env
